@@ -22,7 +22,12 @@ spec:
                 container('maven') {
                     sh "mvn clean package -DskipTests=true"
                 }
-                archiveArtifacts artifacts: 'target/*.jar', allowEmptyArchive: true
+              post {
+                always {
+                  junit 'target/surefire-reports/*.xml'
+                  jacoco execPattern: 'target/jacoco.exec'
+                }
+              }
             }
         }
     }
