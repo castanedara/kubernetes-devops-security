@@ -47,8 +47,9 @@ spec:
     }
     post {
         always {
-            junit 'target/surefire-reports/*.xml'
-            jacoco execPattern: 'target/jacoco.exec'
+            node('master') {
+                echo 'I will always say Hello'
+            }
         }
     }
 }
