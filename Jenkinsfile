@@ -1,9 +1,5 @@
-pipeline {
-    agent {
-        kubernetes {
-            label 'maven-agent'
-            defaultContainer 'maven'
-            yaml """
+node('maven-agent') {
+    podTemplate(yaml: """
 apiVersion: v1
 kind: Pod
 spec:
@@ -26,29 +22,24 @@ spec:
   volumes:
   - name: maven-repo
     emptyDir: {}
-"""
-        }
-    }
-    stages {
-        stage('Build Artifact') {
-            steps {
-                container('maven') {
-                    sh "mvn clean package -DskipTests=true"
+""") {
+        node(POD_LABEL) {
+            try {
+                stage('Build Artifact') {
+                    container('maven') {
+                        sh "mvn clean package -DskipTests=true"
+                    }
                 }
-            }
-        }
-        stage('Run Tests') {
-            steps {
-                container('maven') {
-                    sh "mvn test"
+
+                stage('Run Tests') {
+                    container('maven') {
+                        sh "mvn test"
+                    }
                 }
-            }
-        }
-    }
-    post {
-        always {
-            node('master') {
-                echo 'I will always say Hello'
+            } finally {
+                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+                junit 'target/surefire-reports/*.xml'
+                jacoco execPattern: 'target/jacoco.exec'
             }
         }
     }
