@@ -33,7 +33,7 @@ spec:
 
                 stage('Run Tests') {
                     container('maven') {
-                        sh "mvn test"
+                        sh "mvn test "
                     }
                 }
             } finally {
