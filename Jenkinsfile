@@ -7,6 +7,8 @@ pipeline {
 apiVersion: v1
 kind: Pod
 spec:
+  securityContext:
+    runAsUser: 0
   containers:
   - name: kubectl
     image: bitnami/kubectl:latest
