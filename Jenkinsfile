@@ -8,6 +8,12 @@ apiVersion: v1
 kind: Pod
 spec:
   containers:
+  - name: git
+    image: alpine/git:latest
+    imagePullPolicy: IfNotPresent
+    command:
+    - cat
+    tty: true
   - name: docker
     image: docker:25.0.5-cli
     command: 
