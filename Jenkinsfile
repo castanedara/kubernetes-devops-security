@@ -15,7 +15,7 @@ spec:
     tty: true
     volumeMounts:
       - name: kubeconfig
-        mountPath: /root/.kube
+        mountPath: /.kube/config
   - name: git
     image: alpine/git:latest
     imagePullPolicy: IfNotPresent
@@ -70,6 +70,8 @@ spec:
                 checkout scm
             }
         }
+
+        /*
 
         stage('Set up environment') {
             steps {
@@ -126,7 +128,7 @@ spec:
                 }
             }
         }
-
+*/
          stage('Kubernetes Deployment - DEV') {
             steps {
                 withKubeConfig([credentialsId: 'kubeconfig']) {
