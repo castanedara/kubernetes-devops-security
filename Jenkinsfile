@@ -9,14 +9,13 @@ kind: Pod
 spec:
   containers:
   - name: kubectl
-    image:  bitnami/kubectl:1.28
+    image: bitnami/kubectl:latest
     command:
       - cat
     tty: true
     volumeMounts:
       - name: kubeconfig
-        mountPath: /.kube/config
-        subPath: config
+        mountPath: /root/.kube
   - name: git
     image: alpine/git:latest
     imagePullPolicy: IfNotPresent
@@ -132,8 +131,10 @@ spec:
          stage('Kubernetes Deployment - DEV') {
             steps {
                 container('kubectl') {
-                    sh "sed -i 's#replace#siddharth67/numeric-app:${GIT_COMMIT}#g' k8s_deployment_service.yaml"
-                    sh "kubectl apply -f k8s_deployment_service.yaml"
+                    withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                        sh "sed -i 's#replace#${DOCKER_REGISTRY}/numeric-app:${GIT_COMMIT}#g' k8s_deployment_service.yaml"
+                        sh "kubectl apply -f k8s_deployment_service.yaml"
+                    }
                 }
             }
         }
