@@ -112,7 +112,7 @@ spec:
                 script { 
                     def branch = env.BRANCH_NAME
                     def kube_namespace
-                    if (branch == 'master') {
+                    if (branch == 'master' || branch == 'main' ) {
                         kube_namespace = env.KUBE_NAMESPACES_PROD
                     } else if (branch == 'dev' || branch.startsWith('feature/')) {
                         kube_namespace = env.KUBE_NAMESPACES_DEV
