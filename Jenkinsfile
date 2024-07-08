@@ -133,6 +133,7 @@ spec:
                     echo "Building Namespace: ${env.KUBE_NAMESPACE}"
                 }
             }
+        }
 
         stage('Build Artifact') {
             steps {
