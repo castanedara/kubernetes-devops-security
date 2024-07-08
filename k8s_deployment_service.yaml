@@ -33,3 +33,27 @@ spec:
   selector:
     app: devsecops
   type: NodePort
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: devops-ingress
+  namespace: royalprd
+spec:
+  defaultBackend:
+    service:
+      name: devsecops-svc
+      port:
+        number: 8080
+  ingressClassName: nginx
+  rules:
+    - host: secdevops-royaltechnology.rcticonsulting.com
+      http:
+        paths:
+          - backend:
+              service:
+                name: devsecops-svc
+                port:
+                  number: 8080
+            path: /
+            pathType: Prefix

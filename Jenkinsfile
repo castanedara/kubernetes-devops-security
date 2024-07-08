@@ -65,6 +65,9 @@ spec:
         KUBE_NAMESPACE_PROD = 'royalprd'
         KUBE_NAMESPACE_TEST = 'royaltest'
         KUBE_NAMESPACE_DEV = 'royaldev'
+        URL_APP_PROD = 'secdevops-royaltechnology.rcticonsulting.com'
+        URL_APP_TEST = 'secdevops-dev-royaltechnology.rcticonsulting.com'
+        URL_APP_DEV = 'secdevops-qa-royaltechnology.rcticonsulting.com'
     }
 
     stages {
@@ -114,13 +117,17 @@ spec:
                     
                     def branch = env.BRANCH_NAME
                     def kube_namespace = null
+                    def url_app = null
                     
                     if (branch == 'master' || branch == 'main') {
                         kube_namespace = env.KUBE_NAMESPACE_PROD
+                        url_app = env.URL_APP_PROD
                     } else if (branch == 'dev' || branch.startsWith('feature/')) {
                         kube_namespace = env.KUBE_NAMESPACE_DEV
+                        url_app = env.URL_APP_DEV
                     } else if (branch == 'test') {
                         kube_namespace = env.KUBE_NAMESPACE_TEST
+                        url_app = env.URL_APP_TEST
                     } else {
                         error "Unsupported branch ${branch}"
                     }
@@ -130,6 +137,7 @@ spec:
                     }
                     
                     env.KUBE_NAMESPACE = kube_namespace
+                    env.URL_APP = url_app
                     echo "Building Namespace: ${env.KUBE_NAMESPACE}"
                 }
             }
@@ -170,6 +178,7 @@ spec:
                     withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
                         sh "cd ${env.WORKSPACE_GIT}"
                         sh "sed -i 's#replace#${DOCKER_REGISTRY}/numeric-app:${GIT_COMMIT}#g' k8s_deployment_service.yaml"
+                        sh "sed -i 's#HOST_INGRESS_REPLACE#${URL_APP}/numeric-app:${GIT_COMMIT}#g' k8s_deployment_service.yaml"
                         sh "kubectl apply -f k8s_deployment_service.yaml -n $KUBE_NAMESPACE"
                     }
                 }
