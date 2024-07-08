@@ -8,6 +8,14 @@ apiVersion: v1
 kind: Pod
 spec:
   containers:
+  - name: kubectl
+    image: lachlanevenson/k8s-kubectl:v1.28.10
+    command:
+      - cat
+    tty: true
+    volumeMounts:
+      - name: kubeconfig
+        mountPath: /root/.kube
   - name: git
     image: alpine/git:latest
     imagePullPolicy: IfNotPresent
@@ -43,6 +51,9 @@ spec:
   - name: docker-socket
     hostPath:
       path: /var/run/docker.sock
+  - name: kubeconfig
+    secret:
+      secretName: kubeconfig
 """
         }
     }
