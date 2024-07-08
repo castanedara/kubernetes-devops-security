@@ -16,6 +16,7 @@ spec:
     volumeMounts:
       - name: kubeconfig
         mountPath: /.kube/config
+        subPath: config
   - name: git
     image: alpine/git:latest
     imagePullPolicy: IfNotPresent
