@@ -120,17 +120,33 @@ spec:
 }
 
 // Definición de la función abortAllPreviousBuildInProgress
-void abortAllPreviousBuildInProgress(currentBuild) {
-    def jobName = currentBuild.fullProjectName
-    def buildNumber = currentBuild.number
-    def job = Jenkins.instance.getItemByFullName(jobName)
-
-    if (job != null) {
-        for (build in job.builds) {
-            if (build.number < buildNumber && build.isBuilding()) {
-                build.doStop()
-                echo "Aborted previous build #${build.number}"
+@NonCPS
+private void abortBuild(build){
+    boolean aborted=false;
+    if (build instanceof org.jenkinsci.plugins.workflow.job.WorkflowRun){
+        int counter=0
+        while (counter<60 && build.isInProgress()){
+            for (org.jenkinsci.plugins.workflow.support.steps.input.InputAction inputAction:build.getActions(org.jenkinsci.plugins.workflow.support.steps.input.InputAction.class)){
+                for (org.jenkinsci.plugins.workflow.support.steps.input.InputStepExecution inputStep:inputAction.getExecutions()){
+                    if (!inputStep.isSettled()){
+                        inputStep.doAbort()
+                    }
+                }
             }
+            
+            counter++
+            Thread.sleep(1000) //milliseconds
         }
+    }
+
+    if (build.isInProgress()){
+        build.doKill()
+    }
+
+}
+
+def call(currentBuild) {
+    while(currentBuild.rawBuild.getPreviousBuildInProgress() != null) {
+        abortBuild(currentBuild.rawBuild.getPreviousBuildInProgress())
     }
 }
