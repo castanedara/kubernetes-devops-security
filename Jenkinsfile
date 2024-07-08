@@ -51,12 +51,10 @@ spec:
         }
         stage('Docker Build and Push') {
             steps {
-                container('docker') {    
-                    withDockerRegistry([credentialsId: "nexus-docker", url: "docker-desarrollo-royaltechnology.chickenkiller.com"]) {
-                    sh 'printenv'
-                    sh 'docker build -t docker-desarrollo-royaltechnology.chickenkiller.com/numeric-app:""$GIT_COMMIT"" .'
-                    sh 'docker push docker-desarrollo-royaltechnology.chickenkiller.com/numeric-app:""$GIT_COMMIT""'
-                    }
+                withDockerRegistry([credentialsId: "nexus-docker", url: "docker-desarrollo-royaltechnology.chickenkiller.com"]) {
+                sh 'printenv'
+                sh 'docker build -t docker-desarrollo-royaltechnology.chickenkiller.com/numeric-app:""$GIT_COMMIT"" .'
+                sh 'docker push docker-desarrollo-royaltechnology.chickenkiller.com/numeric-app:""$GIT_COMMIT""'
                 }
             }
         }
