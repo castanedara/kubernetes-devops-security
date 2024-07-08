@@ -106,25 +106,33 @@ spec:
             }
         }
 
+
         stage('Determine Version') {
             steps {
                 script { 
+                    echo "Branch Name: ${env.BRANCH_NAME}"
+                    
                     def branch = env.BRANCH_NAME
-                    def kube_namespace
-                    if (branch == 'master' || branch == 'main' ) {
-                        kube_namespace = env.KUBE_NAMESPACES_PROD
+                    def kube_namespace = null
+                    
+                    if (branch == 'master' || branch == 'main') {
+                        kube_namespace = env.KUBE_NAMESPACE_PROD
                     } else if (branch == 'dev' || branch.startsWith('feature/')) {
-                        kube_namespace = env.KUBE_NAMESPACES_DEV
+                        kube_namespace = env.KUBE_NAMESPACE_DEV
                     } else if (branch == 'test') {
-                        kube_namespace = env.KUBE_NAMESPACES_TEST
+                        kube_namespace = env.KUBE_NAMESPACE_TEST
                     } else {
                         error "Unsupported branch ${branch}"
                     }
+                    
+                    if (kube_namespace == null) {
+                        error "Failed to determine namespace for branch ${branch}"
+                    }
+                    
                     env.KUBE_NAMESPACE = kube_namespace
                     echo "Building Namespace: ${env.KUBE_NAMESPACE}"
                 }
             }
-        }
 
         stage('Build Artifact') {
             steps {
