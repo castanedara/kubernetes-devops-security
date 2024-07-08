@@ -109,7 +109,7 @@ spec:
 
         stage('Determine Version') {
             steps {
-                script {
+                script { 
                     def branch = env.BRANCH_NAME
                     def kube_namespace
                     if (branch == 'master') {
