@@ -62,10 +62,9 @@ spec:
 
     environment {
         DOCKER_REGISTRY = 'docker-desarrollo-royaltechnology.chickenkiller.com'
-        KUBE_NAMESPACE = "default"
-        KUBE_NAMESPACE_PROD = 'royal_prd'
-        KUBE_NAMESPACE_TEST = 'royal_test'
-        KUBE_NAMESPACE_DEV = 'royal_dev'
+        KUBE_NAMESPACE_PROD = 'royalprd'
+        KUBE_NAMESPACE_TEST = 'royaltest'
+        KUBE_NAMESPACE_DEV = 'royaldev'
     }
 
     stages {
