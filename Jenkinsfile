@@ -8,6 +8,11 @@ apiVersion: v1
 kind: Pod
 spec:
   containers:
+  - name: docker
+    image: docker:25.0.5-cli
+    command: 
+      - cat
+    tty: true
   - name: maven
     image: maven:3.9.8-ibmjava-8
     command:
@@ -41,6 +46,17 @@ spec:
             steps {
                 container('maven') {
                     sh "mvn test"
+                }
+            }
+        }
+        stage('Docker Build and Push') {
+            steps {
+                container('docker') {
+                    withDockerRegistry([credentialsId: "nexus-docker", url: ""]) {
+                    sh 'printenv'
+                    sh 'docker build -t docker-desarrollo-royaltechnology.chickenkiller.com/numeric-app:""$GIT_COMMIT"" .'
+                    sh 'docker push docker-desarrollo-royaltechnology.chickenkiller.com/numeric-app:""$GIT_COMMIT""'
+                    }
                 }
             }
         }
