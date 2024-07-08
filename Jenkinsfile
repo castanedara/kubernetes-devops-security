@@ -8,12 +8,6 @@ apiVersion: v1
 kind: Pod
 spec:
   containers:
-  - name: git
-    image: alpine/git:latest
-    imagePullPolicy: IfNotPresent
-    command:
-    - cat
-    tty: true
   - name: docker
     image: docker:25.0.5-cli
     command: 
@@ -107,7 +101,7 @@ spec:
             steps {
                 container('docker') {
                     withCredentials([usernamePassword(credentialsId: 'nexus-docker', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                        sh 'printenv'
+                        // No imprimimos printenv para evitar exponer variables sensibles
                         sh 'docker login -u $DOCKER_USER -p $DOCKER_PASS https://${DOCKER_REGISTRY}'
                         sh 'docker build -t ${DOCKER_REGISTRY}/numeric-app:${GIT_COMMIT} .'
                         sh 'docker push ${DOCKER_REGISTRY}/numeric-app:${GIT_COMMIT}'
@@ -121,6 +115,22 @@ spec:
         always {
             junit 'target/surefire-reports/*.xml'
             jacoco execPattern: 'target/jacoco.exec'
+        }
+    }
+}
+
+// Definición de la función abortAllPreviousBuildInProgress
+void abortAllPreviousBuildInProgress(currentBuild) {
+    def jobName = currentBuild.fullProjectName
+    def buildNumber = currentBuild.number
+    def job = Jenkins.instance.getItemByFullName(jobName)
+
+    if (job != null) {
+        for (build in job.builds) {
+            if (build.number < buildNumber && build.isBuilding()) {
+                build.doStop()
+                echo "Aborted previous build #${build.number}"
+            }
         }
     }
 }
