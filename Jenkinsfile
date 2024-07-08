@@ -146,9 +146,9 @@ spec:
         stage('Docker Build and Push') {
             steps {
                 container('docker') {
-                    withCredentials([usernamePassword(credentialsId: 'nexus-docker', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    withCredentials([usernamePassword(credentialsId: 'nexus-docker', usernameVariable: 'DOCKER_U', passwordVariable: 'DOCKER_P')]) {
                         // No imprimimos printenv para evitar exponer variables sensibles
-                        sh 'docker login -u $DOCKER_USER -p $DOCKER_PASS https://${DOCKER_REGISTRY}'
+                        sh 'docker login -u $DOCKER_U -p $DOCKER_P https://${DOCKER_REGISTRY}'
                         sh 'docker build -t ${DOCKER_REGISTRY}/numeric-app:${GIT_COMMIT} .'
                         sh 'docker push ${DOCKER_REGISTRY}/numeric-app:${GIT_COMMIT}'
                     }
