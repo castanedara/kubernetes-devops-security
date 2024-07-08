@@ -132,6 +132,7 @@ spec:
             steps {
                 container('kubectl') {
                     withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                        sh "cd ${env.WORKSPACE_GIT}"
                         sh "sed -i 's#replace#${DOCKER_REGISTRY}/numeric-app:${GIT_COMMIT}#g' k8s_deployment_service.yaml"
                         sh "kubectl apply -f k8s_deployment_service.yaml"
                     }
