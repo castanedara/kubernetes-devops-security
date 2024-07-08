@@ -9,7 +9,7 @@ kind: Pod
 spec:
   containers:
   - name: kubectl
-    image: lachlanevenson/k8s-kubectl:v1.28.10
+    image:  bitnami/kubectl:1.28
     command:
       - cat
     tty: true
