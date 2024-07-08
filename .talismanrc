@@ -1,4 +1,4 @@
 fileignoreconfig:
 - filename: Jenkinsfile
-  checksum: cf9f993b28942b9fa430681298234925f1fd28b9b5f48c928a07b0fbe181f4fc
+  checksum: 715928a0a5191e1e8337a93f75588d4d1b69b973b0258110fed858be76643092
 version: ""
