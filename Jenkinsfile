@@ -62,6 +62,10 @@ spec:
 
     environment {
         DOCKER_REGISTRY = 'docker-desarrollo-royaltechnology.chickenkiller.com'
+        KUBE_NAMESPACE = "default"
+        KUBE_NAMESPACE_PROD = 'royal_prd'
+        KUBE_NAMESPACE_TEST = 'royal_test'
+        KUBE_NAMESPACE_DEV = 'royal_dev'
     }
 
     stages {
@@ -94,9 +98,31 @@ spec:
                             env.GIT_USER_NAME = sh(script: "git show -s --pretty='%an' ${env.GIT_COMMIT}", returnStdout: true).trim()
                             env.GIT_USER_EMAIL = sh(script: "git --no-pager show -s --format='%ae' ${env.GIT_COMMIT}", returnStdout: true).trim()
                         }
+
+
                         echo "Usuario: ${env.GIT_USER_NAME}"
                         echo "Email: ${env.GIT_USER_EMAIL}"
                     }
+                }
+            }
+        }
+
+        stage('Determine Version') {
+            steps {
+                script {
+                    def branch = env.BRANCH_NAME
+                    def kube_namespace
+                    if (branch == 'master') {
+                        kube_namespace = env.KUBE_NAMESPACES_PROD
+                    } else if (branch == 'dev' || branch.startsWith('feature/')) {
+                        kube_namespace = env.KUBE_NAMESPACES_DEV
+                    } else if (branch == 'test') {
+                        kube_namespace = env.KUBE_NAMESPACES_TEST
+                    } else {
+                        error "Unsupported branch ${branch}"
+                    }
+                    env.KUBE_NAMESPACE = kube_namespace
+                    echo "Building Namespace: ${env.KUBE_NAMESPACE}"
                 }
             }
         }
